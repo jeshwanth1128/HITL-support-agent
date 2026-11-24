@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HITL Support Agent</title><link rel="stylesheet" href="style.css"></head><body>
+<div id="desk">
+<nav id="icons">
+ <button class="ic" data-w="w1"><i>💬</i>Support Chat</button>
+ <button class="ic" data-w="w2"><i>🔒</i>Reviewer Console</button>
+ <button class="ic" data-w="w3"><i>📄</i>ReadMe.txt</button>
+</nav>
+<section class="win" id="w1" data-t="Support Agent">
+ <div class="bar"><b>💬 Support Agent</b><span><button data-a="m">_</button><button data-a="x">×</button></span></div>
+ <div class="menu"><u>F</u>ile &nbsp;<u>E</u>dit &nbsp;<u>V</u>iew &nbsp;<u>H</u>elp</div>
+ <div id="log" class="field"></div>
+ <form id="f"><input id="in" class="field" maxlength="500" placeholder="Type a message…" autocomplete="off"><button class="btn">Send</button></form>
+ <div class="status"><p id="st1">Ready</p><p>Secure session · AI + human review</p></div>
+</section>
+<section class="win" id="w2" data-t="Reviewer Console">
+ <div class="bar"><b>🔒 Reviewer Console</b><span><button data-a="m">_</button><button data-a="x">×</button></span></div>
+ <form id="t"><input id="tok" class="field" type="password" placeholder="Admin token" autocomplete="off"><button class="btn">Unlock</button></form>
+ <div id="q" class="field"><p>Locked. Enter the reviewer token.</p></div>
+ <div class="status"><p id="st2">Locked</p></div>
+</section>
+<section class="win" id="w3" data-t="ReadMe.txt" hidden>
+ <div class="bar"><b>📄 ReadMe.txt</b><span><button data-a="m">_</button><button data-a="x">×</button></span></div>
+ <div class="field txt"><p>HUMAN-IN-THE-LOOP SUPPORT AGENT</p><p>1. Ask about shipping, warranty or accounts: answered from internal docs.</p><p>2. Ask for a refund with an order ID and email. The agent verifies the order and checks the 30-day policy, then PAUSES.</p><p>3. A human approves or rejects in the Reviewer Console. Only then does the refund execute.</p><p>Demo orders:<br>ORD-1001 / alex@example.com ($49.99)<br>ORD-1002 / sam@example.com (45 days, denied)<br>ORD-1003 / alex@example.com ($219)</p></div>
+</section>
+</div>
+<div id="start" hidden><button data-w="w1">💬 Support Chat</button><button data-w="w2">🔒 Reviewer Console</button><button data-w="w3">📄 ReadMe.txt</button></div>
+<footer id="task"><button id="sb"><b>⊞ Start</b></button><div id="tasks"></div><time id="clk"></time></footer>
+<script src="app.js"></script></body></html>
