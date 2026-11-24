@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const sid=localStorage.sid||(localStorage.sid=crypto.randomUUID());let tok=sessionStorage.tok||'',n=-1,z=10;
+const sid=localStorage.sid||(localStorage.sid=crypto.randomUUID());let tok=sessionStorage.tok||'',n=-1,tn=-1,z=10;
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
 const api=async(u,o={})=>{const r=await fetch(u,{...o,headers:{'Content-Type':'application/json',...(tok&&{Authorization:'Bearer '+tok})}});return{ok:r.ok,d:await r.json().catch(()=>({}))}};
 // window manager
@@ -16,7 +16,9 @@ $('#sb').onclick=e=>{e.stopPropagation();$('#start').hidden=!$('#start').hidden}
 const clk=()=>$('#clk').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});clk();setInterval(clk,15000);
 // chat
 const who={user:'You:',bot:'Agent:',sys:'System:'};
-async function chat(){const{d}=await api('/api/chat?sid='+sid);const m=d.msgs||[];if(m.length===n)return;n=m.length;
+async function chat(){const{d}=await api('/api/chat?sid='+sid);const m=d.msgs||[],t=d.trace||[];
+ if(t.length!==tn){tn=t.length;$('#tr').replaceChildren(...t.map(x=>{const p=el('p','tl');p.append(el('b',0,new Date(x.at).toLocaleTimeString()+' '+x.step+' '),document.createTextNode(x.detail));return p}));$('#tr').scrollTop=1e9}
+ if(m.length===n)return;n=m.length;
  $('#log').replaceChildren(...m.map(x=>{const p=el('p','m '+x.role);p.append(el('b',0,who[x.role]),document.createTextNode(x.text));return p}));
  $('#log').scrollTop=1e9;const l=m.filter(x=>x.role!=='user').pop();
  $('#st1').textContent=l&&/must approve|awaiting human/i.test(l.text)?'Waiting for human approval…':'Ready'}
@@ -29,7 +31,7 @@ async function queue(){if(!tok)return;const{ok,d}=await api('/api/review');const
    x.onclick=async()=>{x.disabled=true;await api('/api/review',{method:'POST',body:JSON.stringify({id:t.id,decision:k})});queue();chat()};b.append(x)}
   c.append(b);q.append(c)})}
 $('#f').onsubmit=async e=>{e.preventDefault();const v=$('#in').value.trim();if(!v)return;$('#in').value='';$('#st1').textContent='Agent is thinking…';
- await api('/api/chat',{method:'POST',body:JSON.stringify({sid,message:v})});await chat();queue()};
+ const r=await api('/api/chat',{method:'POST',body:JSON.stringify({sid,message:v})});if(!r.ok)$('#st1').textContent='Server error: open /api/health';await chat();queue()};
 $('#t').onsubmit=e=>{e.preventDefault();tok=sessionStorage.tok=$('#tok').value;$('#tok').value='';queue();kb()};
 async function kb(){const l=$('#kl');if(!tok){l.replaceChildren(el('p',0,'Unlock the Reviewer Console first.'));return}
  const{ok,d}=await api('/api/kb');l.replaceChildren();if(!ok){l.append(el('p',0,'Access denied.'));return}
@@ -43,3 +45,4 @@ async function up(files){let msg='';for(const f of files){if(f.size>50000){msg=f
 $('#fi').onchange=e=>{up([...e.target.files]);e.target.value=''};
 $('#kl').ondragover=e=>e.preventDefault();$('#kl').ondrop=e=>{e.preventDefault();up([...e.dataTransfer.files])};
 front($('#w1'));chat();queue();setInterval(()=>{chat();queue()},4000);
+fetch('/api/health').then(r=>r.json()).then(h=>{$('#st5').textContent='Engine: '+h.engine+' · LLM: '+(h.llm==='configured'?'tool-calling':'rules mode')+' · Store: '+h.store}).catch(()=>{$('#st5').textContent='Health check failed'});
