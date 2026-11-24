@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HITL Support Agent</title><link rel="stylesheet" href="style.css"></head><body>
+<header><h1>Support Agent <span>human-in-the-loop</span></h1><p>Try: “I want a refund for ORD-1001, alex@example.com”</p></header>
+<main><section><h2>Customer chat</h2><div id="log"></div>
+<form id="f"><input id="in" maxlength="500" placeholder="Ask about shipping, refunds, warranty…" autocomplete="off"><button>Send</button></form></section>
+<section><h2>Reviewer console</h2><form id="t"><input id="tok" type="password" placeholder="Admin token"><button>Unlock</button></form>
+<div id="q"><p class="hint">Locked. Enter the reviewer token.</p></div></section></main><script src="app.js"></script></body></html>

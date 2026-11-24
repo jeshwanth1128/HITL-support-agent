@@ -1,0 +1,11 @@
+const c=require('./lib/core'),a=require('assert'),sid=require('crypto').randomUUID();
+(async()=>{const last=async()=>(await c.store.get('s:'+sid)).msgs.slice(-1)[0].text;
+ await c.runAgent(sid,'What is your shipping time?');a(/3-5/.test(await last()));
+ await c.runAgent(sid,'I want a refund');a(/order ID/.test(await last()));
+ await c.runAgent(sid,'ORD-1002 sam@example.com');a(/outside/.test(await last()));
+ await c.runAgent(sid,'refund ORD-1001 wrong@x.com');a(/couldn't verify/.test(await last()));
+ await c.runAgent(sid,'refund ORD-1001 alex@example.com');a(/must approve/.test(await last()));
+ const id=((await c.store.get('idx'))||[])[0];a(!(await c.store.get('t:'+id)).audit.some(x=>/executed/.test(x.event)));
+ a((await c.decide(id,'approve')).code===200);a((await c.decide(id,'approve')).code===409);
+ a(/approved/.test(await last()));
+ a(!c.isAdmin({headers:{authorization:'Bearer x'}}));console.log('ALL TESTS PASSED')})();
