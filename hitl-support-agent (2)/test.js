@@ -1,0 +1,15 @@
+const c=require('./lib/core'),a=require('assert'),sid=require('crypto').randomUUID();
+(async()=>{const last=async()=>(await c.store.get('s:'+sid)).msgs.slice(-1)[0].text;
+ await c.runAgent(sid,'What is your shipping time?');a(/3-5/.test(await last()));
+ await c.runAgent(sid,'I want a refund');a(/order ID/.test(await last()));
+ await c.runAgent(sid,'ORD-1002 sam@example.com');a(/outside/.test(await last()));
+ await c.runAgent(sid,'refund ORD-1001 wrong@x.com');a(/couldn't verify/.test(await last()));
+ await c.runAgent(sid,'refund ORD-1001 alex@example.com');a(/must approve/.test(await last()));
+ const id=((await c.store.get('idx'))||[])[0];a(!(await c.store.get('t:'+id)).audit.some(x=>/executed/.test(x.event)));
+ a((await c.decide(id,'approve')).code===200);a((await c.decide(id,'approve')).code===409);
+ a(/approved/.test(await last()));
+ a((await c.addDoc('evil.exe','x')).code===400);a((await c.addDoc('a.txt','bin\u0000ary')).code===400);
+ a((await c.addDoc('perks.txt','Gift wrapping costs 3 dollars per order.\n\nLoyalty members get free express shipping.')).code===200);
+ await c.runAgent(sid,'how much is gift wrapping');a(/3 dollars/.test(await last())&&/Source: perks.txt/.test(await last()));
+ const f=(await c.listDocs())[0];a((await c.delDoc(f.id)).code===200);a((await c.listDocs()).length===0);
+ a(!c.isAdmin({headers:{authorization:'Bearer x'}}));console.log('ALL TESTS PASSED')})();
